@@ -1,45 +1,92 @@
-const { EmbedBuilder, ActivityType, WebhookClient } = require('discord.js');
-const config = require('../../config/bot')
-const colors = config.colors;
+const { EmbedBuilder, ActivityType, WebhookClient, PresenceUpdateStatus } = require('discord.js');
+const config = require('../../config/bot');
+const { colors, name } = config;
+
+const { version } = require('../../../package.json');
 
 module.exports = async (client) => {
-    // const startLogs = new WebhookClient({
-    //     id: client.webhooks.startLogs.id,
-    //     token: client.webhooks.startLogs.token,
-    // });
-    
-    // console.log(`System: Shard #${client.shard.ids[0] + 1} is ready!`)
-    // console.log(`Bot: Started on ${client.guilds.cache.size} servers!`)
+    // Console logs
+    if (client.shard) {
+        console.log(`System: Shard #${client.shard.ids[0] + 1} is ready!`);
+    } else {
+        console.log('System: Bot is ready!');
+    }
 
-    // let embed = new EmbedBuilder()
-    //     .setTitle(`🆙・Finishing shard`)
-    //     .setDescription(`A shard just finished`)
-    //     .addFields(
-    //         { name: "🆔┆ID", value: `${client.shard.ids[0] + 1}/${client.options.shardCount}`, inline: true },
-    //         { name: "📃┆State", value: `Ready`, inline: true },
-    //     )
-    //     .setColor(colors.normal)
-    
-    // startLogs.send({ username: 'Bot Logs', embeds: [embed] });
+    console.log(`Bot: Started on ${client.guilds.cache.size} servers!`);
 
-    // setInterval(async function () {
-    //     const promises = [
-    //         client.shard.fetchClientValues('guilds.cache.size'),
-    //     ];
-    //     return Promise.all(promises)
-    //         .then(results => {
-    //             const totalGuilds = results[0].reduce((acc, guildCount) => acc + guildCount, 0);
+    // Startup webhook
+    if (client.webhooks?.startLogs?.id && client.webhooks?.startLogs?.token) {
+        const startLogs = new WebhookClient({
+            id: client.webhooks.startLogs.id,
+            token: client.webhooks.startLogs.token,
+        });
 
-    //             const statuttext = [
-    //                     `・❓┆/help`,
-    //                     `・💻┆${totalGuilds} servers`,
-    //                     `・📨┆discord.gg/corwindev`,
-    //                     `・🎉┆400+ commands`,
-    //                     `・🏷️┆Version ${require(`${process.cwd()}/package.json`).version}`
-    //                 ];
-    //             const randomText = statuttext[Math.floor(Math.random() * statuttext.length)];
-    //             client.user.setPresence({ activities: [{ name: randomText, type: ActivityType.Playing }], status: 'online' });
-    //         })
-    // }, 50000)
-}
+        const embed = new EmbedBuilder()
+            .setTitle('🆙・Bot Started')
+            .setDescription('The bot is now ready.')
+            .setColor(colors.normal);
 
+        if (client.shard) {
+            embed.addFields(
+                {
+                    name: '🆔┆Shard',
+                    value: `${client.shard.ids[0] + 1}/${client.options.shardCount}`,
+                    inline: true,
+                },
+                {
+                    name: '📃┆State',
+                    value: 'Ready',
+                    inline: true,
+                }
+            );
+        }
+
+        startLogs.send({
+            username: `${name} Logs`,
+            embeds: [embed],
+        }).catch(console.error);
+    }
+
+    const updatePresence = async () => {
+        try {
+            let totalGuilds;
+
+            if (client.shard) {
+                const results = await client.shard.fetchClientValues('guilds.cache.size');
+                totalGuilds = results.reduce((a, b) => a + b, 0);
+            } else {
+                totalGuilds = client.guilds.cache.size;
+            }
+
+            const statusText = [
+                '❓ /help',
+                `💻 ${totalGuilds} servers`,
+                '📨 discord.gg/corwindev',
+                '🎉 400+ commands',
+                `🏷️ Version ${version}`,
+            ];
+
+            const activity = statusText[Math.floor(Math.random() * statusText.length)];
+
+            await client.user.setPresence({
+                activities: [
+                    {
+                        name: activity,
+                        type: ActivityType.Playing,
+                    },
+                ],
+                status: PresenceUpdateStatus.DoNotDisturb,
+            });
+
+            console.log(`Presence updated: ${activity}`);
+        } catch (err) {
+            console.error('Failed to update presence:', err);
+        }
+    };
+
+    // Set immediately
+    await updatePresence();
+
+    // Rotate every 50 seconds
+    setInterval(updatePresence, 50_000);
+};
