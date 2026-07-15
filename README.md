@@ -45,3 +45,4 @@ This project is not intended to go beyond the scope of the original fork and may
 ![Node.js](https://img.shields.io/badge/Node.js-22.12.0-339933?logo=node.js\&logoColor=white)
 ![discord.js](https://img.shields.io/badge/discord.js-14.22.1-5865F2?logo=discord\&logoColor=white)
 ![dotenv](https://img.shields.io/badge/dotenv-17.4.2-CB3837?logo=npm&logoColor=white)
+![OpenCode](https://img.shields.io/badge/OpenCode-Latest-000000)
