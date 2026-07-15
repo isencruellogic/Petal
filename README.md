@@ -7,7 +7,7 @@
 
 <h3 align="center">Petal</h3>
 
-Petal is an updated version of [Discord-bot](https://github.com/CorwinDev/Discord-Bot), originally developed by [Corwin Dev](https://github.com/CorwinDev). It was created to modernize the original codebase by updating outdated code, improving compatibility with newer versions of Discord.js and Node.js, and cleaning up the project structure. Music and audio-related functionality has been removed as part of this revision.
+Petal is an updated version of [Discord-bot](https://github.com/CorwinDev/Discord-Bot), originally developed by [Corwin Dev](https://github.com/CorwinDev). It was created to bring the original codebase up to date by updating outdated code, improving compatibility with newer versions of Discord.js and Node.js, and cleaning up the project structure. Music and audio-related functionality has been removed as part of this revision.
 
 <br />
 
